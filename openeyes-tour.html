@@ -1,0 +1,229 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenEyes Feature Tour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: narrow intro, then workflow sections, each a 2-column screenshot grid; click a shot for a full-size viewer */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --fg: #16202b;
+  --muted: #56636f;
+  --line: #d8dee4;
+  --accent: #0e6f8a;
+  --accent-soft: #e0eff3;
+  --shot-bg: #0b1520;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d141b; --surface: #141e28; --fg: #e4eaef; --muted: #98a6b2; --line: #26333f;
+  --accent: #5cc3dc; --accent-soft: #15303a; --shot-bg: #05090d; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0d141b; --surface: #141e28; --fg: #e4eaef; --muted: #98a6b2; --line: #26333f;
+  --accent: #5cc3dc; --accent-soft: #15303a; --shot-bg: #05090d; color-scheme: dark }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+h2 { font-size: 1.5rem; font-weight: 700; }
+h3 { font-size: 1.1rem; font-weight: 500; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+header { display: grid; gap: 14px; max-width: 68ch; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.lede { color: var(--muted); font-size: 1.1rem; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.facts span { font-family: var(--font-mono); font-size: 0.78rem; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+
+nav.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 36px 8px; position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); padding-block: 10px; z-index: 2; }
+nav.filters button { font: 600 0.9rem var(--font-body); padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+nav.filters button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+section.group { display: grid; gap: 18px; padding-block: 28px; border-top: 1px solid var(--line); }
+.group-head { display: grid; gap: 4px; max-width: 68ch; }
+.group-head p { color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: 20px; }
+.feat { display: grid; grid-template-rows: auto 1fr; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
+.feat button.shot { display: block; padding: 0; border: 0; background: var(--shot-bg); cursor: zoom-in; aspect-ratio: 16 / 9; width: 100%; max-width: 100%; }
+.feat img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; transition: transform .3s ease; }
+.feat button.shot:hover img { transform: scale(1.02); }
+.feat .body { display: grid; gap: 8px; padding: 16px 18px 18px; align-content: start; }
+.feat .body p { color: var(--muted); font-size: 0.95rem; }
+.tag { justify-self: start; font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 4px; }
+
+.modules { display: grid; gap: 16px; padding-block: 28px; border-top: 1px solid var(--line); }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 0.95rem; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td code { font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); }
+.stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; }
+.stack div { padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.stack dt { font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.stack dd { margin: 4px 0 0; font-weight: 600; }
+footer { border-top: 1px solid var(--line); padding-top: 20px; color: var(--muted); font-size: 0.9rem; display: grid; gap: 6px; }
+
+/* viewer */
+.viewer { position: fixed; inset: 0; background: rgba(3, 7, 11, 0.92); z-index: 10; display: grid; grid-template-rows: auto 1fr auto; padding: calc(12px + env(safe-area-inset-top, 0px)) 16px calc(12px + env(safe-area-inset-bottom, 0px)); color: #e4eaef; }
+.viewer .bar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.viewer .bar h3 { color: #e4eaef; }
+.viewer .stage { display: grid; place-items: center; min-height: 0; padding-block: 12px; }
+.viewer .stage img { max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 6px; }
+.viewer .cap { max-width: 80ch; margin: 0 auto; color: #b4c0ca; text-align: center; font-size: 0.95rem; }
+.viewer button { font: 600 0.9rem var(--font-body); background: #1b2833; color: #e4eaef; border: 1px solid #33424f; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+.viewer .nav { display: flex; gap: 8px; }
+@media (prefers-reduced-motion: reduce) { .feat img { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Open-source ophthalmology EPR · AGPL v3</span>
+    <h1>OpenEyes feature tour</h1>
+    <p class="lede">OpenEyes is the open-source electronic patient record for eye care. Moorfields Eye Hospital started it, and the Apperta Foundation maintains it. These are the screenshots the project publishes for OpenEyes v3, grouped by where each feature fits in a clinic day. Click any screenshot to see it full size.</p>
+    <div class="facts"><span>130+ UK sites</span><span>~1M patients / year</span><span>150+ EyeDraw doodles</span><span>PHP · Yii · MySQL</span></div>
+  </header>
+
+  <nav class="filters" aria-label="Filter features" id="filters"></nav>
+  <main id="groups"></main>
+
+  <section class="modules" id="modules">
+    <div class="group-head">
+      <h2>Event modules in the codebase</h2>
+      <p>OpenEyes organises the record as patient → episode (per subspecialty) → event → element. Each event type is a module.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Module</th><th>What it records</th></tr></thead>
+        <tbody>
+          <tr><td><code>OphCiExamination</code></td><td>Examination: visual acuity, IOP, DR grading, phasing, visual fields and subspecialty elements</td></tr>
+          <tr><td><code>OphTrOperationnote</code></td><td>Operation notes with procedure templates and EyeDraw annotations</td></tr>
+          <tr><td><code>OphInBiometry</code></td><td>Biometry and IOL calculations, which feed the cataract op note</td></tr>
+          <tr><td><code>OphDrPrescription</code></td><td>Prescribing from local formularies and drug sets</td></tr>
+          <tr><td><code>OphCoCorrespondence</code></td><td>Templated clinic letters and discharge summaries, exported as PDF</td></tr>
+          <tr><td><code>OphCoTherapyapplication</code></td><td>Applications for funded therapies, such as anti-VEGF</td></tr>
+          <tr><td><code>OphCoCvi</code></td><td>UK Certificate of Visual Impairment</td></tr>
+          <tr><td><code>Genetics</code></td><td>DNA sample tracking and genetic results</td></tr>
+          <tr><td><code>PatientTicketing</code></td><td>Queues for virtual clinics and other review workflows</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <dl class="stack">
+      <div><dt>Backend</dt><dd>PHP 7.4–8.1, Yii 1.1</dd></div>
+      <div><dt>Database</dt><dd>MySQL / MariaDB</dd></div>
+      <div><dt>Sign-in</dt><dd>SAML, OIDC, LDAP</dd></div>
+      <div><dt>Integration</dt><dd>PAS API, DICOM devices</dd></div>
+    </dl>
+  </section>
+
+  <footer>
+    <p>Screenshots and feature descriptions are from <a href="https://openeyes.apperta.org/oedetail" target="_blank" rel="noopener">openeyes.apperta.org</a>. The project also has demo videos on <a href="https://vimeo.com/showcase/11594462" target="_blank" rel="noopener">Vimeo</a>.</p>
+    <p>Source code: <a href="https://github.com/appertafoundation/openeyes" target="_blank" rel="noopener">github.com/appertafoundation/openeyes</a></p>
+  </footer>
+</div>
+
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-labelledby="v-title">
+  <div class="bar"><h3 id="v-title"></h3><div class="nav"><button id="v-prev" type="button">← Prev</button><button id="v-next" type="button">Next →</button><button id="v-close" type="button">Close</button></div></div>
+  <div class="stage"><img id="v-img" alt=""></div>
+  <p class="cap" id="v-cap"></p>
+</div>
+
+<script>
+const GROUPS = [
+  { id: "clinic", name: "Clinic flow", intro: "Getting patients through the clinic: who is booked, where they are, and what is known about them.", items: [
+    ["l-worklists", "Worklists", "Pulls clinic lists from the hospital PAS. You pick a patient straight from the list and mark them as arrived. Clinicians can also send each other secure messages that are attached to the patient record."],
+    ["r-patientoverview", "Patient overview", "Opening a patient shows one summary page: medications, past treatments, diagnoses, management plans and appointments. A popup version of the same summary stays available inside every event."],
+    ["l-hotlist", "Hot lists", "Your own list of patients currently in clinic, so nobody gets lost while they are being dilated or sent for tests. You can add notes about where each patient is and anything they need."],
+    ["l-virtual-clinics", "Virtual clinics", "Review patients without seeing them in person. Lists can be annotated and generate prescriptions and letters automatically. Each step is tracked and can be undone, and a scratch pad holds notes during the review."],
+    ["r-whiteboard", "Theatre whiteboard", "A screen for the operating theatre showing patient, eye, procedure, lens type and power, and risk factors. A biometry view supports the WHO checklist and post-LASIK formula choices."]
+  ]},
+  { id: "record", name: "Clinical record", intro: "Recording what was seen and done, then acting on it.", items: [
+    ["r-examination-event", "Examination event", "A configurable examination form. You add elements from the left-hand panel. Once saved, the event shows a compact summary that includes the EyeDraw diagrams."],
+    ["l-eyedraw", "EyeDraw", "Draw the eye with more than 150 clinical doodles, such as drusen, laser burns and membranes. Each drawing writes its own report text. There are linked anterior and posterior segment views."],
+    ["l-popups", "Popup data entry", "Green buttons open selection panels, which the project says cuts mouse clicks by up to 50%. IOP is entered with a two-column number picker to avoid scrolling."],
+    ["l-operation-notes", "Operation notes", "Templates fill in each procedure's standard details. For cataract surgery, IOL choice and biometry come in from the biometry event, and EyeDraw marks sutures, iridotomies and other details."],
+    ["l-prescribing", "Prescribing", "Prescribe from an agreed local formulary, with preset drug combinations for speed. Current medications appear in the patient summary popup."],
+    ["l-correspondence", "Correspondence", "Letters fill themselves from recent events using templates. They save as draft or final PDFs, can go to the GP on paper or electronically with a copy to the patient, and can be marked as discharge summaries."]
+  ]},
+  { id: "review", name: "Imaging & trends", intro: "Looking back over images and results across visits.", items: [
+    ["r-lightning", "Lightning viewer", "Flick through documents, OCT stacks and old examinations at video speed, the way you would leaf through a stack of cards."],
+    ["l-oescape", "OEscape", "Subspecialty charts over time. Glaucoma shows visual acuity and IOP. Medical retina shows acuity, central retinal thickness and injection dates. Hovering over a date shows the OCT scan from that visit."]
+  ]},
+  { id: "analytics", name: "Analytics", intro: "Service-level monitoring and national audit.", items: [
+    ["l-audit", "Audit & NOD", "Real-time cataract outcome and complication analysis that meets the National Ophthalmology Database (NOD) standard. You can drill down to individual patients and submit data directly to NOD."],
+    ["l-analytics-rtt", "RTT clinic monitoring", "Waiting-time charts for new and follow-up patients that flag people lost to follow-up or overdue. Click a bar to see the patients behind it and open their history."]
+  ]},
+  { id: "ui", name: "Interface", intro: "Comfort in a darkened clinic room.", items: [
+    ["l-colour", "Colour themes", "Dark mode is the default, with a grey theme for brighter rooms. You can switch with one click partway through an examination, and the system remembers your choice."]
+  ]}
+];
+
+const all = [];
+const groupsEl = document.getElementById("groups");
+GROUPS.forEach(g => {
+  const sec = document.createElement("section");
+  sec.className = "group"; sec.id = g.id; sec.dataset.group = g.id;
+  sec.innerHTML = `<div class="group-head"><h2>${g.name}</h2><p>${g.intro}</p></div><div class="grid"></div>`;
+  const grid = sec.querySelector(".grid");
+  g.items.forEach(([file, title, text]) => {
+    const idx = all.length;
+    all.push({ file, title, text, group: g.id });
+    const card = document.createElement("article");
+    card.className = "feat";
+    card.innerHTML = `<button class="shot" type="button" aria-label="View ${title} screenshot full size"><img src="img/${file}.jpg" alt="OpenEyes ${title} screen" loading="lazy"></button>
+      <div class="body"><span class="tag">${g.name}</span><h3>${title}</h3><p>${text}</p></div>`;
+    card.querySelector("button").addEventListener("click", () => openViewer(idx));
+    grid.appendChild(card);
+  });
+  groupsEl.appendChild(sec);
+});
+
+const filtersEl = document.getElementById("filters");
+const filterDefs = [{ id: "all", name: "All features" }, ...GROUPS.map(g => ({ id: g.id, name: g.name })), { id: "modules", name: "Modules & stack" }];
+let active = "all";
+try { active = localStorage.getItem("oe-filter") || "all"; } catch (e) {}
+function applyFilter(id) {
+  active = id;
+  try { localStorage.setItem("oe-filter", id); } catch (e) {}
+  filtersEl.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.id === id));
+  document.querySelectorAll("section.group").forEach(s => s.hidden = !(id === "all" || s.dataset.group === id));
+  document.getElementById("modules").hidden = !(id === "all" || id === "modules");
+}
+filterDefs.forEach(f => {
+  const b = document.createElement("button");
+  b.type = "button"; b.dataset.id = f.id; b.textContent = f.name;
+  b.addEventListener("click", () => applyFilter(f.id));
+  filtersEl.appendChild(b);
+});
+applyFilter(filterDefs.some(f => f.id === active) ? active : "all");
+
+const viewer = document.getElementById("viewer");
+const vImg = document.getElementById("v-img"), vTitle = document.getElementById("v-title"), vCap = document.getElementById("v-cap");
+let cur = 0, lastFocus = null;
+function show(i) {
+  cur = (i + all.length) % all.length;
+  const it = all[cur];
+  vImg.src = `img/${it.file}.jpg`; vImg.alt = `OpenEyes ${it.title} screen`;
+  vTitle.textContent = `${it.title}  ·  ${cur + 1} / ${all.length}`;
+  vCap.textContent = it.text;
+}
+function openViewer(i) { lastFocus = document.activeElement; show(i); viewer.hidden = false; document.getElementById("v-close").focus(); }
+function closeViewer() { viewer.hidden = true; lastFocus && lastFocus.focus(); }
+document.getElementById("v-prev").onclick = () => show(cur - 1);
+document.getElementById("v-next").onclick = () => show(cur + 1);
+document.getElementById("v-close").onclick = closeViewer;
+viewer.addEventListener("click", e => { if (e.target === viewer || e.target.classList.contains("stage")) closeViewer(); });
+document.addEventListener("keydown", e => {
+  if (viewer.hidden) return;
+  if (e.key === "Escape") closeViewer();
+  if (e.key === "ArrowLeft") show(cur - 1);
+  if (e.key === "ArrowRight") show(cur + 1);
+});
+</script>
